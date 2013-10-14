@@ -1,5 +1,6 @@
 require 'spec_helper'
 
+
 describe "User Pages" do
 	subject { page }
 
@@ -15,8 +16,7 @@ describe "User Pages" do
 	describe "signup page" do
 		before { visit signup_path }
 
-		it { should have_content('Sign up')}
-		it { should have_title('Sign up')}
+		it { should have_signup_page_appearance }
 	end
 
 	describe "signup" do
@@ -31,36 +31,19 @@ describe "User Pages" do
 			describe "after submission with blanks" do
 				before { click_button submit }
 
-				it { should have_title('Sign up') }
-				it { should have_content('error')}
-				it { should have_content('Name can\'t be blank' )}
-				it { should have_content('Email can\'t be blank' )}
-				it { should have_content('Password can\'t be blank' )}
-				it { should have_content('Password is too short (minimum is 6 characters)' )}
+				it { should have_invalid_signup_with_blanks_message }
 			end
 
 			describe "after submission with mismatching password confirmation" do
-				before do
-					fill_in "Name",			with: "Example User"
-					fill_in "Email", 		with: "user@example.com"
-					fill_in "Password",		with: "foobar" 
-					click_button submit
-				end
+				before { invalid_signup_with_password_mismatch }
 
-				it { should have_content('Password confirmation can\'t be blank' )}
-				it { should have_content('Password confirmation doesn\'t match Password' )}
+				it { should have_invalid_signup_with_password_mismatch_message }
 			end
-
 
 		end
 
 		describe "with valid information" do
-			before do
-				fill_in "Name",			with: "Example User"
-				fill_in "Email", 		with: "user@example.com"
-				fill_in "Password",		with: "foobar"
-				fill_in "Confirmation",	with: "foobar"
-			end
+			before { valid_signup }
 
 			it "should create a user" do
 				expect { click_button submit }.to change(User, :count).by(1)
@@ -70,9 +53,9 @@ describe "User Pages" do
 				before { click_button submit }
 				let(:user) { User.find_by(email: "user@example.com") }
 				
-				it { should have_link('Sign out') }
-				it { should have_title(user.name) }
-				it { should have_selector('div.alert.alert-success', text: 'Welcome') }
+				it { should have_signed_in_appearance }
+				it { should have_signed_user_page_info(user) }
+				it { should have_welcome_message }
 			end
 		end
 	end
