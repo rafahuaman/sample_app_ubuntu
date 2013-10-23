@@ -8,7 +8,9 @@ module SessionUtility
 
 	RSpec::Matchers.define :have_signed_in_appearance do
 		match do |page| 
+			expect(page).to have_link('Settings',href: edit_user_path(user))
 			expect(page).to have_link('Sign out',href: signout_path)
+
 		end	
 	end
 
