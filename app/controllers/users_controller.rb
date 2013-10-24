@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :siged_in_user,  only:[:edit, :update]
+  before_action :siged_in_user,  only:[:index, :edit, :update]
   before_action :correct_user,   only:[:edit, :update]
 
   def new
@@ -33,6 +33,10 @@ def update
   else
     render 'edit'
   end
+end
+
+def index
+  @users = User.paginate(page: params[:page])
 end
 
   private
