@@ -9,7 +9,7 @@ describe "Authentication" do
 	describe "signin page" do
 		before { visit signin_path }
 
-		it { should have_sign_in_page_text }		
+		it { should have_sign_in_page_text }
 
 		describe "with invalid information" do
 			before { click_button "Sign in" }
@@ -37,7 +37,31 @@ describe "Authentication" do
 
 				it { should have_signed_out_appearance }
 			end
+
+			describe "when signing in again" do
+				before do 
+					click_link "Sign out"
+					sign_in user
+				end
+
+				it "Should render default profile page" do
+					expect(page).to have_title(user.name)
+				end
+			end
 		end
+
+	end
+
+	describe "signout appearance" do
+		let(:user) { FactoryGirl.create (:user) }
+		before do 
+			sign_in user
+			click_link "Sign out"
+		end
+
+		it { should have_signed_out_appearance }
+		it { should_not have_signed_user_page_info(user) }	
+		it { should_not have_signed_in_appearance }
 	end
 
 	describe "authorization" do
@@ -48,9 +72,7 @@ describe "Authentication" do
 			describe "when attemptig to visit a protected page" do
 				before do
 					visit edit_user_path(user)
-					fill_in "Email", 	with: user.email
-					fill_in "Password", with: user.password
-					click_button "Sign in"
+					valid_signin(user) 
 				end
 
 				describe "after signing in" do
@@ -107,6 +129,23 @@ describe "Authentication" do
 				before { delete user_path(user) }
 				specify { expect(response).to redirect_to(root_url) }
 			end
+		end
+
+		describe "as signed in users" do
+			let(:user) { FactoryGirl.create(:user) }
+			before { sign_in user }
+			
+			describe "visiting the signup page" do
+				before { visit signup_path }
+
+				it { should have_content("Welcome") }
+			end
+
+			# describe "visiting the signin page" do
+			# 	before { visit signin_path }
+
+			# 	it { should have_content("Welcome") }
+			# end
 		end
 	end
 end

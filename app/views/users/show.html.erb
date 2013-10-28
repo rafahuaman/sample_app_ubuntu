@@ -6,6 +6,8 @@
 	  <h1>
 	    <%= gravatar_for @user, size: 50 %>
 		<%= @user.name %>
+		<%=  link_to "delete", @user, method: :delete, 
+  								data: { confirm: "You sure?" } %>
 	  </h1>
 	</section>
   </aside>
