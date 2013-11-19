@@ -53,6 +53,11 @@ def destroy
   end
 end
 
+def feed
+  Micropost.where("user_id = ?", id)
+  
+end
+
   private
 
   def user_params
