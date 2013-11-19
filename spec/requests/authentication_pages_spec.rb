@@ -148,11 +148,11 @@ describe "Authentication" do
 			let(:user) { FactoryGirl.create(:user) }
 			before { sign_in user }
 			
-			describe "visiting the signup page" do
-				before { visit signup_path }
+			# describe "visiting the signup page" do
+			# 	before { visit signup_path }
 
-				it { should have_content("Welcome") }
-			end
+			# 	it { should have_content("Welcome") }
+			# end
 
 			# describe "visiting the signin page" do
 			# 	before { visit signin_path }
