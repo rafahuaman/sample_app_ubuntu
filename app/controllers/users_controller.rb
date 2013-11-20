@@ -28,35 +28,31 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])    
   end
 
-def update
-  @user = User.find(params[:id])
-  if @user.update_attributes(user_params)
-    flash[:success] = "Profile updated"
-    redirect_to @user
-  else
-    render 'edit'
+  def update
+    @user = User.find(params[:id])
+    if @user.update_attributes(user_params)
+      flash[:success] = "Profile updated"
+      redirect_to @user
+    else
+      render 'edit'
+    end
   end
-end
 
-def index
-  @users = User.paginate(page: params[:page])
-end
-
-def destroy
-  if current_user == User.find(params[:id])
-    flash[:error] = "Cannot delete yourself."
-    redirect_to users_url
-  else
-    User.find(params[:id]).destroy
-    flash[:success] = "User deleted."
-    redirect_to users_url
+  def index
+    @users = User.paginate(page: params[:page])
   end
-end
 
-def feed
-  Micropost.where("user_id = ?", id)
-  
-end
+  def destroy
+    if current_user == User.find(params[:id])
+      flash[:error] = "Cannot delete yourself."
+      redirect_to users_url
+    else
+      User.find(params[:id]).destroy
+      flash[:success] = "User deleted."
+      redirect_to users_url
+    end
+  end
+
 
   private
 
