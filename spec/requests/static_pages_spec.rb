@@ -21,15 +21,65 @@ describe "Static pages" do
     describe "for signed-in users" do
       let(:user) { FactoryGirl.create(:user) }
       before do
-        sign_in user
         FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
         FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")
+        sign_in user
         visit root_path
+      end
+
+      describe "pagination" do
+        before do 
+          35.times { |n| FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum#{n}") }
+          visit root_path
+        end
+        #after(:all) { user.microposts.delete_all }
+        
+        it { should have_selector('div.pagination') }
+
+        it "should list each micropost in the feed" do
+          user.feed.paginate(page: 1).each do |item|
+            expect(page).to have_selector("li##{item.id}", text: item.content)
+          end 
+        end
+      end
+
+      describe "delete links" do
+        let(:user2) { FactoryGirl.create(:user) }
+        before do
+          # FactoryGirl.create(:micropost, user: user2, content: "Lorem ipsum")
+          # user.feed << (user2.microposts(0))
+        end
+
+        it "should only display for microposts created by user " do
+          user.feed.each do |item|
+            if item.user_id == user.id
+              expect(page).to have_link('delete', href: micropost_path(item.id))
+            else
+              expect(page).not_to have_link('delete', href: micropost_path(item.id))
+            end
+          end
+        end
       end
 
       it "should render the user's feed" do
         user.feed.each do |item|
           expect(page).to have_selector("li##{item.id}", text: item.content)
+        end
+      end
+
+
+
+      describe "sidebar information" do
+        it "should render the user's information" do
+          expect(page).to have_selector('h1', text: user.name)
+          expect(page).to have_link('view my profile', href: user_path(user))
+        end
+
+        it "should render the appropriate micropost count " do
+          expect(page).to have_selector("span#micropost_counter" ,text: /\A2 microposts\z/)
+          user.microposts[1].destroy
+          visit root_path
+          expect(page).to have_selector("span#micropost_counter" ,text: /\A1 micropost\z/)
         end
       end
     end

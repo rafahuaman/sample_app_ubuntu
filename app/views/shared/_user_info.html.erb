@@ -5,6 +5,7 @@
 <span>
 	<%= link_to "view my profile", current_user %>
 </span>
-<span>
+<span id = "micropost_counter">
+	<%#= "#{current_user.microposts.count} microposts" %>
 	<%= pluralize(current_user.microposts.count, "micropost") %>
 </span>
