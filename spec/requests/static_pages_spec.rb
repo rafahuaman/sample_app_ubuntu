@@ -67,8 +67,6 @@ describe "Static pages" do
         end
       end
 
-
-
       describe "sidebar information" do
         it "should render the user's information" do
           expect(page).to have_selector('h1', text: user.name)
@@ -81,6 +79,17 @@ describe "Static pages" do
           visit root_path
           expect(page).to have_selector("span#micropost_counter" ,text: /\A1 micropost\z/)
         end
+      end
+
+      describe "follower/following counts" do
+        let(:other_user) { FactoryGirl.create(:user)  }
+        before do
+          other_user.follow!(user)
+          visit root_path
+        end
+
+        it { should have_link("0 following", href: following_user_path(user)) }
+        it { should have_link("1 followers", href: followers_user_path(user)) }
       end
     end
   end
